@@ -1,0 +1,24 @@
+Vagrant.configure("2") do |config|
+  # Especifica la caja base que se va a usar
+  config.vm.box = "ubuntu/bionic64"
+
+  # Configuración de red: asignar una IP estática
+  config.vm.network "private_network", ip: "192.168.33.10"
+
+  # Configurar 1 CPU y 512MB de RAM para la máquina virtual
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "512"
+    vb.cpus = 1
+  end
+
+  # Compartir un directorio local con la máquina virtual
+  config.vm.synced_folder "./webpages", "/var/www/html"
+
+  # Configuración para instalar Apache automáticamente
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo apt-get update
+    sudo apt-get install -y apache2
+    sudo systemctl enable apache2
+    sudo systemctl start apache2
+  SHELL
+end
